@@ -3,7 +3,6 @@
 # ==============================================================================
 FROM python:3.11-slim
 
-# Set environment variables for Python in containers
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
@@ -30,12 +29,8 @@ COPY scripts/ ./scripts/
 RUN useradd -u 1000 appuser && chown -R appuser /app
 USER appuser
 
-# Expose default port (Railway automatically injects $PORT at runtime)
+# Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
-
-# Launch uvicorn dynamically binding to Railway's assigned $PORT
+# Launch uvicorn dynamically binding to Railway's assigned $PORT (or 8000)
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

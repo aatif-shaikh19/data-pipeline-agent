@@ -34,6 +34,18 @@ app.add_middleware(SlowAPIMiddleware)
 app.include_router(agent_router, prefix="/agent", tags=["Agent"])
 
 
+@app.get("/", tags=["System"])
+async def root():
+    """Root endpoint welcoming visitors and linking to documentation."""
+    return {
+        "service": "Pipeline Guardian",
+        "status": "online",
+        "health": "/health",
+        "docs": "/docs",
+        "invoke_endpoint": "/agent/invoke"
+    }
+
+
 @app.get("/health", tags=["System"])
 async def health_check():
     """Health check endpoint for container orchestrators and monitoring."""
